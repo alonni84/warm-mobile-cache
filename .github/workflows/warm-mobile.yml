@@ -1,9 +1,7 @@
 name: Warm Mobile Cache
 
 on:
-  schedule:
-    - cron: "*/30 * * * *"   # every 30 minutes (UTC)
-  workflow_dispatch:
+  workflow_dispatch:   # manual runs only
 
 jobs:
   warm:
@@ -17,7 +15,7 @@ jobs:
           IFS=$'\n'
           for u in $URLS; do
             [ -z "$u" ] && continue
-            sleep $((RANDOM % 4))          # small random delay
+            sleep $((RANDOM % 4))
             curl -sS -A "$UA" -m 20 "$u" > /dev/null || true
             sleep 0.5
           done
