@@ -1,0 +1,23 @@
+name: Warm Mobile Cache
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"   # every 30 minutes (UTC)
+  workflow_dispatch:
+
+jobs:
+  warm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Warm pages with Android UA (no URL echo, with jitter)
+        env:
+          UA: Mozilla/5.0 (Linux; Android 12; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Mobile Safari/537.36
+          URLS: ${{ secrets.WARM_URLS }}
+        run: |
+          IFS=$'\n'
+          for u in $URLS; do
+            [ -z "$u" ] && continue
+            sleep $((RANDOM % 4))          # small random delay
+            curl -sS -A "$UA" -m 20 "$u" > /dev/null || true
+            sleep 0.5
+          done
